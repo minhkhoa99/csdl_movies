@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.31, for Win64 (x86_64)
 --
--- Host: localhost    Database: csdl_movies
+-- Host: localhost    Database: tbl_movies
 -- ------------------------------------------------------
 -- Server version	8.0.31
 
@@ -14,29 +14,6 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
---
--- Table structure for table `favorites`
---
-
-DROP TABLE IF EXISTS `favorites`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `favorites` (
-  `id_Favorites` int NOT NULL,
-  PRIMARY KEY (`id_Favorites`),
-  UNIQUE KEY `id_Favorites_UNIQUE` (`id_Favorites`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `favorites`
---
-
-LOCK TABLES `favorites` WRITE;
-/*!40000 ALTER TABLE `favorites` DISABLE KEYS */;
-/*!40000 ALTER TABLE `favorites` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `genres`
@@ -75,8 +52,15 @@ DROP TABLE IF EXISTS `history`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `history` (
   `id_History` int NOT NULL,
-  PRIMARY KEY (`id_History`),
-  UNIQUE KEY `id_History_UNIQUE` (`id_History`)
+  `user_id_User` int NOT NULL,
+  `movies_id_Movies` int NOT NULL,
+  `movies_genres_id_Genres` int NOT NULL,
+  PRIMARY KEY (`id_History`,`user_id_User`,`movies_id_Movies`,`movies_genres_id_Genres`),
+  UNIQUE KEY `id_History_UNIQUE` (`id_History`),
+  KEY `fk_history_user1_idx` (`user_id_User`),
+  KEY `fk_history_movies1_idx` (`movies_id_Movies`,`movies_genres_id_Genres`),
+  CONSTRAINT `fk_history_movies1` FOREIGN KEY (`movies_id_Movies`, `movies_genres_id_Genres`) REFERENCES `movies` (`id_Movies`, `genres_id_Genres`),
+  CONSTRAINT `fk_history_user1` FOREIGN KEY (`user_id_User`) REFERENCES `user` (`id_User`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -102,12 +86,15 @@ CREATE TABLE `movies` (
   `description` varchar(45) DEFAULT NULL,
   `directors` varchar(45) DEFAULT NULL,
   `performer` varchar(45) DEFAULT NULL,
-  `category` varchar(45) DEFAULT NULL,
   `year_Of_manufacture` varchar(45) DEFAULT NULL,
   `link_Movies` varchar(45) DEFAULT NULL,
   `trailler` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id_Movies`),
-  UNIQUE KEY `id_Movies_UNIQUE` (`id_Movies`)
+  `Category` varchar(45) DEFAULT NULL,
+  `genres_id_Genres` int NOT NULL,
+  PRIMARY KEY (`id_Movies`,`genres_id_Genres`),
+  UNIQUE KEY `id_Movies_UNIQUE` (`id_Movies`),
+  KEY `fk_movies_genres_idx` (`genres_id_Genres`),
+  CONSTRAINT `fk_movies_genres` FOREIGN KEY (`genres_id_Genres`) REFERENCES `genres` (`id_Genres`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -131,8 +118,15 @@ CREATE TABLE `reviews` (
   `id_Reviews` int NOT NULL,
   `Comments` varchar(45) DEFAULT NULL,
   `Ratings` int DEFAULT NULL,
-  PRIMARY KEY (`id_Reviews`),
-  UNIQUE KEY `id_Reviews_UNIQUE` (`id_Reviews`)
+  `user_id_User` int NOT NULL,
+  `movies_id_Movies` int NOT NULL,
+  `movies_genres_id_Genres` int NOT NULL,
+  PRIMARY KEY (`id_Reviews`,`user_id_User`,`movies_id_Movies`,`movies_genres_id_Genres`),
+  UNIQUE KEY `id_Reviews_UNIQUE` (`id_Reviews`),
+  KEY `fk_reviews_user1_idx` (`user_id_User`),
+  KEY `fk_reviews_movies1_idx` (`movies_id_Movies`,`movies_genres_id_Genres`),
+  CONSTRAINT `fk_reviews_movies1` FOREIGN KEY (`movies_id_Movies`, `movies_genres_id_Genres`) REFERENCES `movies` (`id_Movies`, `genres_id_Genres`),
+  CONSTRAINT `fk_reviews_user1` FOREIGN KEY (`user_id_User`) REFERENCES `user` (`id_User`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -181,8 +175,15 @@ DROP TABLE IF EXISTS `watch_list`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `watch_list` (
   `id_Watch_List` int NOT NULL,
-  PRIMARY KEY (`id_Watch_List`),
-  UNIQUE KEY `id_Watch_List_UNIQUE` (`id_Watch_List`)
+  `movies_id_Movies` int NOT NULL,
+  `movies_genres_id_Genres` int NOT NULL,
+  `user_id_User` int NOT NULL,
+  PRIMARY KEY (`id_Watch_List`,`movies_id_Movies`,`movies_genres_id_Genres`,`user_id_User`),
+  UNIQUE KEY `id_Watch_List_UNIQUE` (`id_Watch_List`),
+  KEY `fk_watch_list_movies1_idx` (`movies_id_Movies`,`movies_genres_id_Genres`),
+  KEY `fk_watch_list_user1_idx` (`user_id_User`),
+  CONSTRAINT `fk_watch_list_movies1` FOREIGN KEY (`movies_id_Movies`, `movies_genres_id_Genres`) REFERENCES `movies` (`id_Movies`, `genres_id_Genres`),
+  CONSTRAINT `fk_watch_list_user1` FOREIGN KEY (`user_id_User`) REFERENCES `user` (`id_User`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -204,4 +205,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-02-20 23:51:23
+-- Dump completed on 2023-02-21 22:10:33
